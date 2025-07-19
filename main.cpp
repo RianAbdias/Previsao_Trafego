@@ -1,106 +1,88 @@
 #include <Bayesnet.h>
 #include <Bayesnode.h>
-#include <BeliefPropagator.h>
-#include <GibbsSampler.h>
-#include <ConditionalProbabilityTable.h>
-#include <JointProbabilityTable.h>
 #include <LWSampler.h>
-#include <MarginalProbabilityTable.h>
-#include <MaximumLikelihoodLearning.h>
-#include <RejectionSampler.h>
+#include <JointProbabilityTable.h>
 #include <iostream>
 #include <string>
 
 int main() {
- //This enum is a way to deal with the node in a more confortable way.
- //Instead of using numbers we are going to use words.
- enum node{
-  CLOUDY=0,
-  SPRINKLER=1,
-  RAIN=2,
-  GRASS=3
- };
+    enum node {
+        HORA = 0,
+        CHUVA = 1,
+        EVENTO = 2,
+        TRANSITO = 3
+    };
 
-  //It creates a net with 4 nodes, each node can assume 2 states
- bayonet::Bayesnet myNet({2, 2, 2, 2});
+    //todos booleanos e impactam em transito
+    bayonet::Bayesnet rede({3, 2, 2, 2});
 
- //It defines the number of iteration to use for the sampler
- //and the sampler we are going to use.
- unsigned int iterations = 50000;
- bayonet::LWSampler myLWSampler;
- //bayonet::GibbsSampler myGibbsSampler; //A Gibbs sampler can be used too
+    rede.AddEdge(HORA, TRANSITO);
+    rede.AddEdge(CHUVA, TRANSITO);
+    rede.AddEdge(EVENTO, TRANSITO);
 
+    //hora (sem horario de pico, horario de pico de manhã, horario de pico tarde/noite)
+    rede[HORA].conditionalTable.SetProbabilities({}, {0.5, 0.3, 0.2});
 
- //Setting the Bayesian network.
- //There are 4 boolean nodes: CLOUDY, SPRINKLER, RAIN, GRASS
- //The structure is like a diamond.
- myNet.AddEdge(CLOUDY, SPRINKLER);
- myNet.AddEdge(CLOUDY, RAIN);
- myNet.AddEdge(SPRINKLER, GRASS);
- myNet.AddEdge(RAIN, GRASS);
+    //chuva (nao chove/chove)
+    rede[CHUVA].conditionalTable.SetProbabilities({}, {0.7, 0.3});  
 
- //Setting the Conditional tables for each node.
- //The conditional table contains the probabilities associated with each
- //state of each parent of the current node.
- myNet[CLOUDY].conditionalTable.SetProbabilities({}, {0.50, 0.50});
+    //evento (tem, nao tem)
+    rede[EVENTO].conditionalTable.SetProbabilities({}, {0.9, 0.1}); 
 
- myNet[SPRINKLER].conditionalTable.SetProbabilities({true}, {0.90, 0.10});
- myNet[SPRINKLER].conditionalTable.SetProbabilities({false}, {0.50, 0.50});
+    //transito: P(transito / hora, chuva, evento)
+    //com hora 0
+    rede[TRANSITO].conditionalTable.SetProbabilities({0, false, false}, {0.8, 0.2});
+    rede[TRANSITO].conditionalTable.SetProbabilities({0, false, true},  {0.6, 0.4});
+    rede[TRANSITO].conditionalTable.SetProbabilities({0, true, false},  {0.5, 0.5});
+    rede[TRANSITO].conditionalTable.SetProbabilities({0, true, true},   {0.3, 0.7});
+    //com hora 1
+    rede[TRANSITO].conditionalTable.SetProbabilities({1, false, false}, {0.3, 0.7});
+    rede[TRANSITO].conditionalTable.SetProbabilities({1, false, true},  {0.2, 0.8});
+    rede[TRANSITO].conditionalTable.SetProbabilities({1, true, false},  {0.2, 0.8});
+    rede[TRANSITO].conditionalTable.SetProbabilities({1, true, true},   {0.1, 0.9});
+    //com hora 2
+    rede[TRANSITO].conditionalTable.SetProbabilities({2, false, false}, {0.4, 0.6});
+    rede[TRANSITO].conditionalTable.SetProbabilities({2, false, true},  {0.3, 0.7});
+    rede[TRANSITO].conditionalTable.SetProbabilities({2, true, false},  {0.3, 0.7});
+    rede[TRANSITO].conditionalTable.SetProbabilities({2, true, true},   {0.2, 0.8});
 
- myNet[RAIN].conditionalTable.SetProbabilities({true}, {0.20, 0.80});
- myNet[RAIN].conditionalTable.SetProbabilities({false}, {0.80, 0.20});
+    int horaDigitada;
+    bool chovendo, evento;
 
- myNet[GRASS].conditionalTable.SetProbabilities({true,true}, {0.01, 0.99});
- myNet[GRASS].conditionalTable.SetProbabilities({true,false}, {0.10, 0.90});
- myNet[GRASS].conditionalTable.SetProbabilities({false,true}, {0.10, 0.90});
- myNet[GRASS].conditionalTable.SetProbabilities({false,false}, {1.0, 0.0});
+    std::cout << "Informe a hora (0–23): ";
+    std::cin >> horaDigitada;
 
- //The output of the sampler is a JointTable, that is a useful
- //way to deal with joint probabilities. Here the inference is made.
- bayonet::JointProbabilityTable myJointTable = myLWSampler.ReturnJointProbabilityTable(myNet,iterations);
+    int horaEstado = 0;
+    if ((horaDigitada >= 6 && horaDigitada <= 7)) {
+        horaEstado = 1;
+    } else if ((horaDigitada >= 12 && horaDigitada <= 13) || (horaDigitada >= 18 && horaDigitada <= 19)) {
+        horaEstado = 2;
+    }
 
- //Here we are going to print the result of the sampling
- std::cout << std::endl << "==== Initial conditions without evidences ====" << std::endl;
- std::cout << std::endl << "-------------- CLOUDY --------------" << std::endl;
- myJointTable.PrintMarginal(CLOUDY);
- std::cout << std::endl << "------------ SPRINKLER ------------" << std::endl;
- myJointTable.PrintMarginal( SPRINKLER);
- std::cout << std::endl << "-------------- RAIN --------------" << std::endl;
- myJointTable.PrintMarginal(RAIN);
- std::cout << std::endl << "-------------- GRASS -------------" << std::endl;
- myJointTable.PrintMarginal(GRASS);
- std::cout << std::endl;
+    std::cout << "Está chovendo? (1 = sim, 0 = não): ";
+    std::cin >> chovendo;
 
- //In the following sections we are going to play with the nodes,
- //setting up different inference sates and looking for the results.
- myNet[GRASS].SetEvidence(true);
- myJointTable = myLWSampler.ReturnJointProbabilityTable(myNet,iterations);
+    std::cout << "Tem evento na cidade? (1 = sim, 0 = não): ";
+    std::cin >> evento;
 
- std::cout << std::endl << "========= The GRASS is wet =========" << std::endl;
- std::cout << std::endl << "-------------- CLOUDY --------------" << std::endl;
- myJointTable.PrintMarginal(CLOUDY);
- std::cout << std::endl << "------------ SPRINKLER ------------" << std::endl;
- myJointTable.PrintMarginal( SPRINKLER);
- std::cout << std::endl << "-------------- RAIN --------------" << std::endl;
- myJointTable.PrintMarginal(RAIN);
- std::cout << std::endl << "-------------- GRASS -------------" << std::endl;
- myJointTable.PrintMarginal(GRASS);
- std::cout << std::endl;
+    rede[HORA].SetEvidence(horaEstado);
+    rede[CHUVA].SetEvidence(chovendo);
+    rede[EVENTO].SetEvidence(evento);
 
- myNet[GRASS].SetEvidence(-1);
- myNet[CLOUDY].SetEvidence(true);
- myJointTable = myLWSampler.ReturnJointProbabilityTable(myNet,iterations);
+    bayonet::LWSampler sampler;
+    bayonet::JointProbabilityTable tabela = sampler.ReturnJointProbabilityTable(rede, 50000);
 
- std::cout << std::endl << "====== The weather is CLOUDY  ======" << std::endl;
- std::cout << std::endl << "-------------- CLOUDY --------------" << std::endl;
- myJointTable.PrintMarginal(CLOUDY);
- std::cout << std::endl << "------------ SPRINKLER ------------" << std::endl;
- myJointTable.PrintMarginal( SPRINKLER);
- std::cout << std::endl << "-------------- RAIN --------------" << std::endl;
- myJointTable.PrintMarginal(RAIN);
- std::cout << std::endl << "-------------- GRASS -------------" << std::endl;
- myJointTable.PrintMarginal(GRASS);
- std::cout << std::endl;
+    std::cout << "\n==== Resultado da previsão de trânsito ====" << std::endl;
+    tabela.PrintMarginal(TRANSITO);
 
- return 0;
+    double probSemTransito = tabela.ReturnMarginal(TRANSITO, 0) * 100.0;
+    double probComTransito = tabela.ReturnMarginal(TRANSITO, 1) * 100.0;
+
+    std::cout << std::fixed;
+    std::cout.precision(2);
+    std::cout << "Há " << probComTransito << "% de chance de ter trânsito e "<< probSemTransito << "% de chance de não ter trânsito." << std::endl;
+
+    std::cout << "\n" << std::endl;
+
+    return 0;
 }
