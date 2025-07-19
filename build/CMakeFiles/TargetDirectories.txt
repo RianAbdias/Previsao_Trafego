@@ -1,0 +1,3 @@
+/home/rian/Área de trabalho/programacao/Intro-IA/Previsao_Trafego/build/CMakeFiles/traffic.dir
+/home/rian/Área de trabalho/programacao/Intro-IA/Previsao_Trafego/build/CMakeFiles/edit_cache.dir
+/home/rian/Área de trabalho/programacao/Intro-IA/Previsao_Trafego/build/CMakeFiles/rebuild_cache.dir
