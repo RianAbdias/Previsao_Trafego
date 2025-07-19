@@ -177,16 +177,10 @@ CMakeFiles/traffic.dir/main.cpp.o: \
  /usr/include/c++/13/bits/stl_heap.h \
  /usr/include/c++/13/bits/uniform_int_dist.h \
  /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/Bayesnode.h \
- /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/BeliefPropagator.h \
+ /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/LWSampler.h \
  /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/Bayesnet.h \
  /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/MarginalProbabilityTable.h \
- /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/GibbsSampler.h \
- /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/ConditionalProbabilityTable.h \
  /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/JointProbabilityTable.h \
- /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/LWSampler.h \
- /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/MarginalProbabilityTable.h \
- /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/MaximumLikelihoodLearning.h \
- /home/lazaro-santos/Previsao_Trafego/external/bayonet/include/RejectionSampler.h \
  /usr/include/c++/13/iostream /usr/include/c++/13/ostream \
  /usr/include/c++/13/ios /usr/include/c++/13/bits/ios_base.h \
  /usr/include/c++/13/bits/locale_classes.h \
