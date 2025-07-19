@@ -1,4 +1,4 @@
-# Install script for directory: /home/rian/Área de trabalho/programacao/Intro-IA/Previsao_Trafego
+# Install script for directory: /home/lazaro-santos/Previsao_Trafego
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/rian/Área de trabalho/programacao/Intro-IA/Previsao_Trafego/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/lazaro-santos/Previsao_Trafego/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

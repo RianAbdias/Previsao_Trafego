@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I"/home/rian/Área de trabalho/programacao/Intro-IA/Previsao_Trafego/external/bayonet/include"
+CXX_INCLUDES = -I/home/lazaro-santos/Previsao_Trafego/external/bayonet/include
 
 CXX_FLAGS = -std=gnu++17
 
